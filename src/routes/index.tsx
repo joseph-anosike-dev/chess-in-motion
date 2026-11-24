@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChessGame } from "@/components/chess-game/ChessGame";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Open File — Single-player chess" },

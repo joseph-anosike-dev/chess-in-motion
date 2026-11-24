@@ -4,17 +4,17 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { chooseComputerMove } from "@/lib/chess-ai";
-import { ChessPiece } from "./ChessPiece";
+import { ChessPieceScene } from "./ChessPieceScene";
 
 const STARTING_FEN = new Chess().fen();
 const FILES = "abcdefgh";
 const PIECE_NAMES: Record<PieceSymbol, string> = {
-  p: "pawn",
-  n: "knight",
-  b: "bishop",
-  r: "rook",
-  q: "queen",
-  k: "king",
+  p: "Lieutenant / Platoon (Pawn)",
+  n: "Captain (Knight)",
+  b: "Captain (Bishop)",
+  r: "Major (Rook)",
+  q: "Lt Col (Queen)",
+  k: "Colonel (King)",
 };
 
 interface AnimatedMove {
@@ -143,6 +143,12 @@ export function ChessGame() {
     white: moves[index * 2],
     black: moves[index * 2 + 1],
   }));
+  const boardPieces = game.board().flatMap((row, rowIndex) =>
+    row.flatMap((piece, fileIndex) => {
+      if (!piece) return [];
+      return [{ ...piece, square: `${FILES.charAt(fileIndex)}${8 - rowIndex}` as Square }];
+    }),
+  );
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
@@ -181,7 +187,7 @@ export function ChessGame() {
 
             <div className="mt-3 rounded-lg border border-board-edge bg-board-edge p-2.5 shadow-[0_18px_55px_-30px_var(--board-edge)] sm:p-3.5">
               <div className="relative aspect-square overflow-hidden rounded-[3px]">
-                <div className="grid h-full grid-cols-8 grid-rows-8">
+                <div className="board-camo-grid grid h-full grid-cols-8 grid-rows-8">
                   {Array.from({ length: 8 }, (_, rowIndex) => {
                     const rank = 8 - rowIndex;
                     return Array.from(FILES, (file, fileIndex) => {
@@ -194,7 +200,6 @@ export function ChessGame() {
                         (move) => move.to === square && (move.captured || move.flags.includes("e")),
                       );
                       const isLastMove = lastMove?.from === square || lastMove?.to === square;
-                      const isAnimatedLanding = animation?.to === square;
 
                       return (
                         <Button
@@ -205,11 +210,8 @@ export function ChessGame() {
                           aria-label={`${square}, ${piece ? `${piece.color === "w" ? "white" : "black"} ${PIECE_NAMES[piece.type]}` : "empty"}`}
                           aria-pressed={isSelected}
                           onClick={() => onSquareClick(square)}
-                          className={`relative isolate grid h-full w-full aspect-square place-items-center overflow-hidden rounded-none p-0 text-inherit shadow-none hover:bg-transparent focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${isLight ? "bg-board-light" : "bg-board-dark"} ${isSelected ? "ring-2 ring-inset ring-board-highlight" : ""} ${isLastMove ? "after:pointer-events-none after:absolute after:inset-0 after:bg-board-highlight/35 after:content-['']" : ""}`}
+                          className={`relative isolate grid h-full w-full aspect-square place-items-center overflow-hidden rounded-none p-0 text-inherit shadow-none hover:bg-transparent focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${isLight ? "board-camo-light" : "board-camo-dark"} ${isSelected ? "ring-2 ring-inset ring-board-highlight" : ""} ${isLastMove ? "after:pointer-events-none after:absolute after:inset-0 after:bg-board-highlight/35 after:content-['']" : ""}`}
                         >
-                          {piece && !isAnimatedLanding && (
-                            <ChessPiece type={piece.type} color={piece.color} />
-                          )}
                           {isLegalDestination && !piece && (
                             <span
                               aria-hidden="true"
@@ -242,26 +244,7 @@ export function ChessGame() {
                   })}
                 </div>
 
-                {animation && (
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-20 grid grid-cols-8 grid-rows-8"
-                  >
-                    <div
-                      className="piece-flight grid aspect-square place-items-center"
-                      style={
-                        {
-                          gridColumnStart: FILES.indexOf(animation.from[0] ?? "a") + 1,
-                          gridRowStart: 8 - Number(animation.from[1]),
-                          "--move-x": `${(animation.to.charCodeAt(0) - animation.from.charCodeAt(0)) * 100}%`,
-                          "--move-y": `${(Number(animation.from[1]) - Number(animation.to[1])) * 100}%`,
-                        } as React.CSSProperties
-                      }
-                    >
-                      <ChessPiece type={animation.piece.type} color={animation.piece.color} />
-                    </div>
-                  </div>
-                )}
+                <ChessPieceScene pieces={boardPieces} animation={animation} />
               </div>
             </div>
 
@@ -351,6 +334,24 @@ export function ChessGame() {
                   : "Black to play"}
               <span className="text-border">·</span>
               Standard chess
+            </div>
+
+            <div className="mt-5 border-t border-border/80 pt-4">
+              <h2 className="text-xs font-semibold uppercase text-muted-foreground">Rank designations</h2>
+              <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                {[
+                  ["Colonel", "King"],
+                  ["Lt Col", "Queen"],
+                  ["Major", "Rook"],
+                  ["Captain", "Bishop / Knight"],
+                  ["Lieutenant / Platoon", "Pawn"],
+                ].map(([rank, piece]) => (
+                  <div key={rank} className="contents">
+                    <dt className="font-medium text-foreground">{rank}</dt>
+                    <dd className="text-muted-foreground">{piece}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </aside>
         </section>

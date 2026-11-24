@@ -1,12 +1,12 @@
 import type { PieceSymbol } from "chess.js";
 
 const pieceNames: Record<PieceSymbol, string> = {
-  p: "pawn",
-  n: "knight",
-  b: "bishop",
-  r: "rook",
-  q: "queen",
-  k: "king",
+  p: "Lieutenant / Platoon (pawn)",
+  n: "Captain (knight)",
+  b: "Captain (bishop)",
+  r: "Major (rook)",
+  q: "Lt Col (queen)",
+  k: "Colonel (king)",
 };
 
 export function ChessPiece({ type, color }: { type: PieceSymbol; color: "w" | "b" }) {

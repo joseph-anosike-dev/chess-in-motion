@@ -29,4 +29,4 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
-Keep chess rules and computer move selection in a standalone client-side module, with independent tests, so gameplay stays verifiable.
+Keep chess rules and computer move selection in a standalone client-side module with independent tests, and render pieces through one client-only React Three Fiber scene, so gameplay stays verifiable and WebGL stays browser-only.
