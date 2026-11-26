@@ -337,7 +337,9 @@ export function ChessGame() {
             </div>
 
             <div className="mt-5 border-t border-border/80 pt-4">
-              <h2 className="text-xs font-semibold uppercase text-muted-foreground">Rank designations</h2>
+              <h2 className="text-xs font-semibold uppercase text-muted-foreground">
+                Rank designations
+              </h2>
               <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                 {[
                   ["Colonel", "King"],
